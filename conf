@@ -1,0 +1,41 @@
+#!/bin/bash -ex
+
+## Matterhorm patch produced by Jeremy Davis aka JedMeister
+## Using install instructions from here: http://opencast.jira.com/wiki/display/mh13/Install+Source+Linux+v1.3
+install()
+{
+    apt-get update
+    DEBIAN_FRONTEND=noninteractive apt-get -y \
+        -o DPkg::Options::=--force-confdef \
+        -o DPkg::Options::=--force-confold \
+        install $@
+}
+
+USER=matterhorn
+MAT_VER=1.3.1
+FEL_VER=3.2.2 # currently Matterhorn only works with Felix v3.x
+
+mkdir -p /opt/matterhorn
+cd /opt/matterhorn
+
+useradd -m matterhorn
+
+# install packages
+install sudo subversion openjdk-6-jdk maven2 gstreamer0.10-plugins-base gstreamer0.10-plugins-good # pulls down about 300+MB... - including x11
+
+sudo -H -u matterhorn echo "export JAVA_HOME=/usr/lib/jvm/java-6-openjdk" >> ~/.bashrc
+#sudo -H -u matterhorn . ~/.bashrc
+
+wget http://archive.apache.org/dist/felix/org.apache.felix.main.distribution-$FEL_VER.tar.gz
+tar xvf org.apache.felix.main.distribution-$FEL_VER.tar.gz
+mv felix-framework-$FEL_VER felix
+svn checkout http://opencast.jira.com/svn/MH/tags/$MAT_VER matterhorn_$MAT_VER
+
+rm /opt/matterhorn/org.apache.felix.main.distribution-$FEL_VER.tar.gz
+
+
+chown $USER:$USER /opt/matterhorn
+
+
+# tell the world what we've done!
+echo 'Hello world - I just patched TurnKey!' >> /etc/issue
