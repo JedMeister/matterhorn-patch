@@ -31,6 +31,13 @@ tar xvf org.apache.felix.main.distribution-$FEL_VER.tar.gz
 mv felix-framework-$FEL_VER felix
 svn checkout http://opencast.jira.com/svn/MH/tags/$MAT_VER matterhorn_$MAT_VER
 
+mkdir /opt/matterhorn/felix/load
+cp -rf /opt/matterhorn/matterhorn_$MAT_VER/docs/felix/* /opt/matterhorn/felix/
+
+export MAVEN_OPTS='-Xms256m -Xmx960m -XX:PermSize=64m -XX:MaxPermSize=256m'
+cd /opt/matterhorn/matterhorn_1.3.1
+mvn clean install -DdeployTo=/opt/matterhorn/felix/matterhorn
+
 rm /opt/matterhorn/org.apache.felix.main.distribution-$FEL_VER.tar.gz
 
 
